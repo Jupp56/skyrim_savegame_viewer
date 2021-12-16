@@ -1,4 +1,3 @@
-
 pub mod form_id;
 mod get;
 
@@ -8,7 +7,6 @@ use std::{
     error::Error,
     fmt::{self, Debug, Display, Formatter},
 };
-
 
 /// Something wrong has occurred while fetching an external resource.
 #[derive(Debug, Clone, PartialEq)]

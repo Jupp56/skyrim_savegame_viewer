@@ -1,21 +1,22 @@
-use yew::prelude::*;
 use skyrim_savegame::global_data::{GlobalDataType, TES};
-use skyrim_savegame::{FormIdType, TESUnknown0, ChangeForm};
-
+use skyrim_savegame::{ChangeForm, FormIdType, TESUnknown0};
+use yew::prelude::*;
 
 extern crate image;
 
 use crate::components::form_id_resolver::render_hex;
 
-use self::image::{RgbaImage, DynamicImage};
+use self::image::{DynamicImage, RgbaImage};
 
 use super::collapsible_table::{render_collapsible_table, RenderFunctionType};
-use super::form_id_resolver::{FormIdResolver, FormIdEntry};
-
+use super::form_id_resolver::{FormIdEntry, FormIdResolver};
 
 extern crate base64;
 
-pub fn render_save_game(save_game: skyrim_savegame::SaveFile, form_id_resolver: &FormIdResolver) -> Html {
+pub fn render_save_game(
+    save_game: skyrim_savegame::SaveFile,
+    form_id_resolver: &FormIdResolver,
+) -> Html {
     let form_id_array = &save_game.form_id_array;
 
     html! {
@@ -104,11 +105,14 @@ pub fn render_meta_data(save_game: &skyrim_savegame::SaveFile) -> Html {
 }
 
 pub fn render_screenshot(i: skyrim_savegame::ScreenshotData) -> Html {
-    let img = DynamicImage::ImageRgba8(RgbaImage::from_raw(i.width, i.height, i.data).expect("Screenshot data corrupted"));
+    let img = DynamicImage::ImageRgba8(
+        RgbaImage::from_raw(i.width, i.height, i.data).expect("Screenshot data corrupted"),
+    );
 
     let mut png_bytes: Vec<u8> = Vec::new();
 
-    img.write_to(&mut png_bytes, self::image::ImageOutputFormat::Png).unwrap();
+    img.write_to(&mut png_bytes, self::image::ImageOutputFormat::Png)
+        .unwrap();
 
     let encoded_image = self::base64::encode(png_bytes);
 
@@ -227,7 +231,7 @@ pub fn render_header(h: &skyrim_savegame::header::Header) -> Html {
     }
 }
 
-pub fn render_plugins(plugins: &Vec<String>) -> Html {
+pub fn render_plugins(plugins: &[String]) -> Html {
     html! {
         <>
         <h2>
@@ -235,14 +239,14 @@ pub fn render_plugins(plugins: &Vec<String>) -> Html {
         </h2>
         <table class="table table-striped table-sm" style="overflow-y: scroll; height: 100px;">
         <tbody>
-        { plugins.iter().map(render_plugin).collect::<Html>() }
+        { plugins.iter().map(|plugin_name| render_plugin(plugin_name)).collect::<Html>() }
         </tbody>
         </table>
         </>
     }
 }
 
-pub fn render_light_plugins(light_plugins: &Vec<String>) -> Html {
+pub fn render_light_plugins(light_plugins: &[String]) -> Html {
     html! {
         <>
         <h2>
@@ -250,14 +254,14 @@ pub fn render_light_plugins(light_plugins: &Vec<String>) -> Html {
         </h2>
         <table class="table table-striped">
         <tbody>
-        { light_plugins.iter().map(render_plugin).collect::<Html>() }
+        { light_plugins.iter().map(|plugin_name| render_plugin(plugin_name)).collect::<Html>() }
         </tbody>
         </table>
         </>
     }
 }
 
-pub fn render_plugin(plugin: &String) -> Html {
+pub fn render_plugin(plugin: &str) -> Html {
     html! {
         <tr>
         <td>
@@ -267,22 +271,34 @@ pub fn render_plugin(plugin: &String) -> Html {
     }
 }
 
-pub fn render_global_data_table(d: &Vec<GlobalDataType>, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver) -> Html {
+pub fn render_global_data_table(
+    d: &[GlobalDataType],
+    form_id_array: &Vec<u32>,
+    form_id_map: &FormIdResolver,
+) -> Html {
     html! {
         { d.iter().map(|x| { render_global_data(x, form_id_array, form_id_map)}).collect::<Html>() }
     }
 }
 
-fn render_global_data(d: &GlobalDataType, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver) -> Html {
+fn render_global_data(
+    d: &GlobalDataType,
+    form_id_array: &Vec<u32>,
+    form_id_map: &FormIdResolver,
+) -> Html {
     match d {
         GlobalDataType::TES(tes) => render_tes(tes, form_id_array, form_id_map),
         GlobalDataType::Weather(weather) => render_weather(weather, form_id_array, form_id_map),
         GlobalDataType::MiscStats(misc_stats) => render_misc_stats(misc_stats),
-        _ => html! {<></>}
+        _ => html! {<></>},
     }
 }
 
-fn render_weather(w: &skyrim_savegame::Weather, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver) -> Html {
+fn render_weather(
+    w: &skyrim_savegame::Weather,
+    form_id_array: &Vec<u32>,
+    form_id_map: &FormIdResolver,
+) -> Html {
     html! {
         <>
         <div class="row">
@@ -473,11 +489,13 @@ fn render_misc_stats(misc_stats: &Vec<skyrim_savegame::MiscStats>) -> Html {
     render_collapsible_table(
         "Misc Stats".to_string(),
         "miscStatTable".to_string(),
-        vec!("Name".to_string(),
-             "Category".to_string(),
-             "Value".to_string()),
+        vec![
+            "Name".to_string(),
+            "Category".to_string(),
+            "Value".to_string(),
+        ],
         misc_stats,
-        RenderFunctionType::SingleArgument(render_misc_stat)
+        RenderFunctionType::SingleArgument(render_misc_stat),
     )
 }
 
@@ -529,7 +547,11 @@ fn render_tes(tes: &TES, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver)
     }
 }
 
-fn render_tes_unknown_0(t: &TESUnknown0, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver) -> Html {
+fn render_tes_unknown_0(
+    t: &TESUnknown0,
+    form_id_array: &Vec<u32>,
+    form_id_map: &FormIdResolver,
+) -> Html {
     html! {
             <tr>
                 <td>
@@ -544,17 +566,27 @@ fn render_tes_unknown_0(t: &TESUnknown0, form_id_array: &Vec<u32>, form_id_map: 
     }
 }
 
-fn render_form_id_type(rid: &FormIdType, form_id_array: &Vec<u32>, form_id_map: &FormIdResolver) -> Html {
+fn render_form_id_type(
+    rid: &FormIdType,
+    form_id_array: &Vec<u32>,
+    form_id_map: &FormIdResolver,
+) -> Html {
     match rid {
-        FormIdType::Index(i) => { html!( <>{ "Form ID from FormIDIndex: " } { render_hex(*form_id_array.get(*i as usize).unwrap()) } </>) }
+        FormIdType::Index(i) => {
+            html!( <>{ "Form ID from FormIDIndex: " } { render_hex(*form_id_array.get(*i as usize).unwrap()) } </>)
+        }
         FormIdType::Default(i) => {
             if *i == 0 {
                 return html! {<>{ "Zero Id: " }{render_hex(0)}</>};
             }
             render_look_up_form_id(*i, form_id_map)
         }
-        FormIdType::Created(i) => { html!( <>{ "Ref_ID (created): " } { render_hex(*i) }</>) }
-        FormIdType::Unknown(i) => { html!( <>{ "Ref_ID (unknown): " } { render_hex(*i) }</>) }
+        FormIdType::Created(i) => {
+            html!( <>{ "Ref_ID (created): " } { render_hex(*i) }</>)
+        }
+        FormIdType::Unknown(i) => {
+            html!( <>{ "Ref_ID (unknown): " } { render_hex(*i) }</>)
+        }
     }
 }
 
@@ -562,7 +594,11 @@ fn render_form_id_entry(entry: &FormIdEntry) -> String {
     format!("Name: {}, Category: {:?}", entry.name, entry.category)
 }
 
-pub fn render_change_forms(c: &Vec<ChangeForm>, _form_id_array: &Vec<u32>, _form_id_map: &FormIdResolver) -> Html {
+pub fn render_change_forms(
+    c: &Vec<ChangeForm>,
+    _form_id_array: &Vec<u32>,
+    _form_id_map: &FormIdResolver,
+) -> Html {
     html! {
         <>
         {"Change forms! ("} { c.len() } {" of them to be exact)"}
@@ -570,7 +606,11 @@ pub fn render_change_forms(c: &Vec<ChangeForm>, _form_id_array: &Vec<u32>, _form
     }
 }
 
-pub fn render_change_form(_c: &ChangeForm, _form_id_array: &Vec<u32>, _form_id_map: &FormIdResolver) -> Html {
+pub fn render_change_form(
+    _c: &ChangeForm,
+    _form_id_array: &Vec<u32>,
+    _form_id_map: &FormIdResolver,
+) -> Html {
     html! {
         <table class="table">
         <thead>

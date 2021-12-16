@@ -1,13 +1,23 @@
-use yew::{Html, html};
+use yew::{html, Html};
 
 use super::form_id_resolver::FormIdResolver;
 
 pub enum RenderFunctionType<'a, T> {
     SingleArgument(fn(&T) -> Html),
-    WithFormIds(fn(&T, &Vec<u32>, &FormIdResolver) -> Html, &'a Vec<u32>, &'a FormIdResolver),
+    WithFormIds(
+        fn(&T, &Vec<u32>, &FormIdResolver) -> Html,
+        &'a Vec<u32>,
+        &'a FormIdResolver,
+    ),
 }
 
-pub fn render_collapsible_table<T>(header: String, unique_name: String, table_headers: Vec<String>, items: &Vec<T>, render_item_function: RenderFunctionType<T>) -> Html {
+pub fn render_collapsible_table<T>(
+    header: String,
+    unique_name: String,
+    table_headers: Vec<String>,
+    items: &Vec<T>,
+    render_item_function: RenderFunctionType<T>,
+) -> Html {
     let target = format!("#{}", unique_name);
 
     html! {
@@ -29,7 +39,11 @@ pub fn render_collapsible_table<T>(header: String, unique_name: String, table_he
     }
 }
 
-pub fn render_table<T>(table_headers: Vec<String>, items: &Vec<T>, render_item_function: RenderFunctionType<T>) -> Html {
+pub fn render_table<T>(
+    table_headers: Vec<String>,
+    items: &Vec<T>,
+    render_item_function: RenderFunctionType<T>,
+) -> Html {
     html!(
         <table class="table table-striped">
             <thead>
@@ -49,16 +63,17 @@ fn render_table_items<T>(items: &Vec<T>, arguments: RenderFunctionType<T>) -> Ht
         RenderFunctionType::SingleArgument(render_function) => {
             items.iter().map(render_function).collect::<Html>()
         }
-        RenderFunctionType::WithFormIds(render_function, form_id_array, form_id_map) => {
-            items.iter().map(|x| { render_function(x, form_id_array, form_id_map) }).collect::<Html>()
-        }
+        RenderFunctionType::WithFormIds(render_function, form_id_array, form_id_map) => items
+            .iter()
+            .map(|x| render_function(x, form_id_array, form_id_map))
+            .collect::<Html>(),
     }
 }
 
 fn render_th(th: &String) -> Html {
     html!(
-            <th>
-            { th }
-            </th>
-        )
+        <th>
+        { th }
+        </th>
+    )
 }

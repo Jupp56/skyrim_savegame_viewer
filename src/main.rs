@@ -1,15 +1,13 @@
 use std::collections::HashMap;
 
-use controller::FetchState;
 use controller::form_id::fetch_form_ids;
+use controller::FetchState;
 use yew::prelude::*;
 
-use gloo_console as console;
 use gloo_file::callbacks::FileReader;
 use gloo_file::File;
 use web_sys::{Event, HtmlInputElement};
 use yew::{html, Component, Html};
-
 
 mod components;
 
@@ -158,7 +156,7 @@ impl Component for Upload {
                 </div>
 
                     { match &self.save_game {
-                        Some(game) => self.view_game(game.clone(), &self.form_id_list.as_ref().unwrap(), &self.selected_part, ctx),
+                        Some(game) => self.view_game(game.clone(), self.form_id_list.as_ref().unwrap(), &self.selected_part, ctx),
                         None => {Self::nothing()}
                     }
                     }
@@ -176,7 +174,8 @@ impl Upload {
         ctx: &Context<Self>,
     ) -> Html {
         let file_section_onclick = move |selected_part: SaveFileParts| {
-            ctx.link().callback(move |_: MouseEvent| Msg::SelectedPart(selected_part))
+            ctx.link()
+                .callback(move |_: MouseEvent| Msg::SelectedPart(selected_part))
         };
 
         let menu = html! {
@@ -279,8 +278,6 @@ impl Upload {
         }
     }
 }
-
-
 
 fn main() {
     yew::start_app::<Upload>();

@@ -1,11 +1,9 @@
-use web_sys::{ Request, RequestInit, RequestMode, Response};
-
+use web_sys::{Request, RequestInit, RequestMode, Response};
 
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
 
 use super::FetchError;
-
 
 pub async fn get_string(url: &str) -> Result<String, FetchError> {
     let mut opts = RequestInit::new();

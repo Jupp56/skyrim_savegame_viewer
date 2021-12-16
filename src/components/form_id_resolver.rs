@@ -114,9 +114,17 @@ pub enum FormIdCategory {
 
 pub fn render_hex(val: u32) -> Html {
     let mut res: String = String::new();
-    let _ = val.to_be_bytes().iter().map(|x| {
-        if *x != 0 { res.push_str(&format!("{:02x?}", x).to_uppercase()) } else { res.push_str("00") }
-    }).collect::<()>();
+    let _ = val
+        .to_be_bytes()
+        .iter()
+        .map(|x| {
+            if *x != 0 {
+                res.push_str(&format!("{:02x?}", x).to_uppercase())
+            } else {
+                res.push_str("00")
+            }
+        })
+        .collect::<()>();
     //res.push_str(&format!(" as decimal: {}", val));
     Html::from(res)
 }
